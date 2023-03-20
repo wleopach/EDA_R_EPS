@@ -130,3 +130,81 @@ diamonds %>%
   ggplot(mapping = aes(x = color, y = cut)) +
   geom_tile(mapping = aes(fill = n))
 
+
+############### two continuous variables ###############################
+
+#1D
+ggplot(data = diamonds) +
+  geom_point(mapping = aes(x = carat, y = price))
+
+ggplot(data = diamonds) + 
+  geom_point(mapping = aes(x = carat, y = price), alpha = 1 / 100)
+
+
+smaller <- diamonds %>% 
+  filter(carat < 3)
+#2D
+ggplot(data = smaller) +
+  geom_bin2d(mapping = aes(x = carat, y = price))
+
+install.packages("hexbin")
+ggplot(data = smaller) +
+  geom_hex(mapping = aes(x = carat, y = price))
+
+#Bin the categorical variable, cut_width(x, width), as used above, divides 
+#x into bins of width width
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_width(carat, 0.1)), varwidth = TRUE)
+
+ggplot(data = smaller, mapping = aes(x = price, y = carat)) + 
+  geom_boxplot(mapping = aes(group = cut_width(price, 500)), varwidth = TRUE)
+
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_number(carat, 20)))
+
+
+ggplot(data = smaller, mapping = aes(x = price, y = carat)) + 
+  geom_boxplot(mapping = aes(group = cut_number(price, 20)))
+
+
+## freqplot bining using cut width
+ggplot(data = smaller, mapping = aes(x = price)) + 
+  geom_freqpoly(mapping = aes(color = cut_width(carat, 0.1)))
+
+## freqplot bining using cut number
+ggplot(data = smaller, mapping = aes(x = price)) + 
+  geom_freqpoly(mapping = aes(color = cut_number(carat, 20)))
+
+ggplot(data = smaller, mapping = aes(x = carat)) + 
+  geom_freqpoly(mapping = aes(color = cut_number(price, 20)))+
+  facet_wrap(vars(cut))
+
+
+
+ggplot(data = smaller, mapping = aes(x = carat, y = price)) + 
+  geom_boxplot(mapping = aes(group = cut_width(carat, 0.1)), varwidth = TRUE) +
+  facet_wrap(vars(cut))
+
+
+
+###PATERNS AND MODELS#########################################################
+
+ggplot(data = faithful) + 
+  geom_point(mapping = aes(x = eruptions, y = waiting))
+
+
+library(modelr)
+
+mod <- lm(log(price) ~ log(carat), data = diamonds)
+
+
+diamonds2 <- diamonds %>% 
+  add_residuals(mod) %>% 
+  mutate(resid = exp(resid))
+
+
+ggplot(data = diamonds2) + 
+  geom_point(mapping = aes(x = carat, y = resid))
+
+ggplot(data = diamonds2) + 
+  geom_boxplot(mapping = aes(x = cut, y = resid))

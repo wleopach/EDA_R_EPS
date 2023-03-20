@@ -56,3 +56,11 @@ p3 <- eps %>%
   geom_tile(mapping = aes(fill = n))
 
 p3+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
+
+
+sum(eps[,"Cantidad"])
+
+eps %>%
+  group_by(Nombre,Departamento) %>%
+  summarise()
